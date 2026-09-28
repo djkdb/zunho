@@ -272,7 +272,13 @@ function setClock(tx: Transaction, time: ClockTime): void {
 
 function pullBook(tx: Transaction, book: (typeof BOOK_IDS)[number]): void {
   const s = tx.state;
-  if (s.solvedPuzzles.includes('bookshelf') || s.bookPulls.includes(book)) return;
+  if (s.solvedPuzzles.includes('bookshelf')) return;
+  if (s.bookPulls.includes(book)) {
+    // Changed their mind: push the book back in, keep the rest of the sequence.
+    s.bookPulls = s.bookPulls.filter((b) => b !== book);
+    tx.emit({ type: 'sfx', id: 'bookSlide' });
+    return;
+  }
   s.bookPulls = [...s.bookPulls, book];
   tx.emit({ type: 'sfx', id: 'bookSlide' });
   if (s.bookPulls.length < FRIEND_ORDER.length) return;
@@ -393,7 +399,21 @@ export function reduce(state: GameState, action: GameAction): ReduceResult {
     }
     case 'BEGIN_EXPLORATION': {
       if (state.phase !== 'intro') return { state, events: [] };
-      return { state: { ...state, phase: 'exploration' }, events: [] };
+      // First-time guidance, phrased as the character's thought rather than a tutorial box.
+      const firstLook: GameEvent[] =
+        state.discoveredObjects.length === 0
+          ? [
+              {
+                type: 'narrate',
+                tone: 'info',
+                text: L(
+                  'Some things here catch the light. Take a closer look.',
+                  '몇몇 물건이 희미하게 빛을 받는다. 가까이 살펴보자.',
+                ),
+              },
+            ]
+          : [];
+      return { state: { ...state, phase: 'exploration' }, events: firstLook };
     }
     case 'FINISH_ESCAPE': {
       if (state.phase !== 'escape') return { state, events: [] };
@@ -519,6 +539,8 @@ function applyItemUse(tx: Transaction, item: ItemId, target: TargetId): void {
     return;
   }
   if (!check(interaction.requires, s)) {
+    // Put the item down so the next tap acts on the object itself (e.g. switching the lamp on).
+    s.heldItem = null;
     if (interaction.blockedEffects) tx.apply(interaction.blockedEffects);
     tx.narrate(interaction.blockedText ?? DEFAULT_USE_FAIL, 'error');
     return;

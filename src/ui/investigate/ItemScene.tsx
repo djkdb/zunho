@@ -50,8 +50,11 @@ function usePageContent(page: DocPage | undefined) {
 
 function Pager({ item, page, count }: { item: ItemId; page: number; count: number }) {
   const t = useT();
-  if (count <= 1) return null;
   const doc = ITEMS[item].doc!;
+  // The next arrow breathes until the player has actually turned to every page (the P.S. matters).
+  const furthestRead = useGame((s) => s.readPages[doc] ?? 0);
+  if (count <= 1) return null;
+  const unread = page < count - 1 && furthestRead < count - 1;
   const go = (p: number) => dispatch({ type: 'READ_PAGE', doc, page: p });
   return (
     <div className="pager">
@@ -61,7 +64,13 @@ function Pager({ item, page, count }: { item: ItemId; page: number; count: numbe
       <span className="pager-count">
         {page + 1} / {count}
       </span>
-      <button type="button" className="pager-btn" onClick={() => go(page + 1)} disabled={page >= count - 1} aria-label={t(UI.nextPage)}>
+      <button
+        type="button"
+        className={`pager-btn ${unread ? 'is-unread' : ''}`}
+        onClick={() => go(page + 1)}
+        disabled={page >= count - 1}
+        aria-label={t(UI.nextPage)}
+      >
         <IconChevronRight />
       </button>
     </div>
@@ -70,9 +79,15 @@ function Pager({ item, page, count }: { item: ItemId; page: number; count: numbe
 
 function LampButton({ item }: { item: ItemId }) {
   const t = useT();
+  const lampOn = useGame((s) => s.flags.lampOn);
+  const hold = () => {
+    // From the inspector the lamp is within reach: switching it on is part of the same gesture.
+    if (!lampOn) dispatch({ type: 'TOGGLE_LAMP' });
+    dispatch({ type: 'USE_ITEM', item, target: 'lamp' });
+  };
   return (
-    <button type="button" className="brass-button brass-button--glow" onClick={() => dispatch({ type: 'USE_ITEM', item, target: 'lamp' })}>
-      {t(UI.holdToLamp)}
+    <button type="button" className="brass-button brass-button--glow" onClick={hold}>
+      {t(lampOn ? UI.holdToLamp : UI.lampOnAndHold)}
     </button>
   );
 }
@@ -85,6 +100,9 @@ function DocumentView({ item, page }: { item: ItemId; page: number }) {
   const animating = useRevealAnimation(revealed);
   const inkRevealed = useGame((s) => s.flags.inkRevealed);
   const onBlankPage = item === 'journal' && page === 3 && !inkRevealed;
+  // Looking at one torn half while carrying the other: offer to fit the edges together.
+  const otherHalf: ItemId | null = item === 'note_left' ? 'note_right' : item === 'note_right' ? 'note_left' : null;
+  const hasOtherHalf = useGame((s) => !!otherHalf && s.inventory.includes(otherHalf));
 
   // Swipe between pages on touch screens.
   const touchX = useRef<number | null>(null);
@@ -111,6 +129,11 @@ function DocumentView({ item, page }: { item: ItemId; page: number }) {
       </article>
       <Pager item={item} page={page} count={doc.pages.length} />
       {onBlankPage && <LampButton item="journal" />}
+      {hasOtherHalf && otherHalf && (
+        <button type="button" className="brass-button brass-button--glow" onClick={() => dispatch({ type: 'COMBINE', a: item, b: otherHalf })}>
+          {t(UI.fitHalves)}
+        </button>
+      )}
     </div>
   );
 }

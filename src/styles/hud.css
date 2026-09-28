@@ -286,6 +286,30 @@
   animation: narrationIn 0.5s var(--ease-out) both;
 }
 
+/* In close-ups the line sits over scene captions, so it gets a solid backing. */
+.phase-investigation .narration-line,
+.phase-puzzle .narration-line {
+  padding: 8px 18px;
+  background: rgba(10, 8, 6, 0.92);
+  border: 1px solid rgba(227, 178, 101, 0.22);
+  border-radius: 14px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+}
+
+.phase-investigation .narration-line--error,
+.phase-puzzle .narration-line--error {
+  border-color: rgba(192, 84, 74, 0.55);
+}
+
+/* Panels are read with full attention: subtitles wait. */
+.game:has(.side-panel) .narration {
+  opacity: 0;
+}
+
+.narration {
+  transition: opacity 0.3s;
+}
+
 :lang(ko) .narration-line {
   font-style: normal;
   font-size: clamp(16px, 2vw, 19px);
@@ -558,13 +582,17 @@
   }
 
   .slot {
-    width: 56px;
-    height: 56px;
+    width: 52px;
+    height: 52px;
   }
 
   .slot-art {
-    width: 46px;
-    height: 46px;
+    width: 44px;
+    height: 44px;
+  }
+
+  .inventory-slots {
+    gap: 6px;
   }
 
   .inventory-tray-help {

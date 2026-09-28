@@ -38,8 +38,8 @@ export const INTERACTIONS: InteractionDef[] = [
     targets: ['lamp'],
     requires: { flag: 'lampOn' },
     blockedText: L(
-      'The bulb is cold. Heat would need the lamp to be on.',
-      '전구가 차갑다. 열을 내려면 램프가 켜져 있어야 한다.',
+      'The bulb is cold. The lamp needs to be switched on first.',
+      '전구가 차갑다. 먼저 램프를 켜야 한다.',
     ),
     blockedEffects: [{ type: 'sfx', id: 'locked' }],
     effects: [
@@ -63,7 +63,7 @@ export const INTERACTIONS: InteractionDef[] = [
     item: 'photograph',
     targets: ['lamp'],
     requires: { flag: 'lampOn' },
-    blockedText: L('Too dark to see anything new.', '너무 어두워 새로운 것이 보이지 않는다.'),
+    blockedText: L('Too dark to see anything new. Switch the lamp on first.', '너무 어두워 보이지 않는다. 먼저 램프를 켜자.'),
     effects: [
       { type: 'setFlag', flag: 'photoTruth', value: true },
       { type: 'addClue', clue: 'photo_truth' },

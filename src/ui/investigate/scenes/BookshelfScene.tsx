@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { BOOK_BY_ID, BOOKS, romanVolume } from '../../../game/data/books';
+import { BOOK_BY_ID, BOOKS, FRIEND_ORDER, romanVolume } from '../../../game/data/books';
 import { OBJECTS } from '../../../game/data/objects';
 import { dispatch, gameStore, useGame } from '../../../game/store';
 import type { BookId } from '../../../game/types';
@@ -45,8 +45,8 @@ export function BookshelfScene() {
             : solved
             ? t({ en: 'Behind the four friends, a hidden compartment stands open.', ko: '네 친구 뒤로 숨겨진 칸이 열려 있다.' })
             : t({
-                en: 'Some spines bear a small emblem and a volume number. Tap a book to pull it out.',
-                ko: '몇몇 책등에는 작은 문양과 권수가 새겨져 있다. 책을 눌러 꺼낼 수 있다.',
+                en: 'Some spines bear a small emblem and a volume number. Tap a book to pull it out — tap again to push it back.',
+                ko: '책등에 작은 문양과 권수가 새겨져 있다. 책을 누르면 꺼내고, 다시 누르면 제자리에 넣는다.',
               })}
         </p>
       }
@@ -95,6 +95,17 @@ export function BookshelfScene() {
             )}
           </div>
         ))}
+        {/* Four brass sockets under the shelf record the pulling order, so a slip is easy to spot and undo. */}
+        <div className="shelf-sockets" aria-live="polite" aria-label={t({ en: 'Pulled books', ko: '꺼낸 책' })}>
+          {Array.from({ length: 4 }, (_, i) => {
+            const book = solved ? FRIEND_ORDER[i] : pulls[i];
+            return (
+              <span key={i} className={`shelf-socket ${book ? 'is-filled' : ''}`}>
+                {book ? <BookSymbol id={book} size={18} color="#2a1a09" /> : <i aria-hidden="true">{i + 1}</i>}
+              </span>
+            );
+          })}
+        </div>
       </div>
     </SceneFrame>
   );

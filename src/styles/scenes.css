@@ -491,7 +491,7 @@
   align-items: flex-end;
   justify-content: center;
   gap: 5px;
-  height: clamp(132px, calc((100dvh - 360px) / 3), 196px);
+  height: clamp(120px, calc((100dvh - 420px) / 3), 190px);
   padding: 10px 12px 0;
   background: linear-gradient(180deg, #0a0605, #150e09 80%);
   border-bottom: 14px solid #4a3526;
@@ -592,6 +592,45 @@
 .shelf-compartment .pickup-art {
   width: 70px;
   height: 70px;
+}
+
+.shelf-sockets {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding: 10px 0 12px;
+  background: linear-gradient(180deg, #3b291c, #22170f);
+}
+
+.shelf-socket {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  font-family: var(--f-display);
+  font-size: 14px;
+  font-style: normal;
+  color: rgba(227, 199, 137, 0.45);
+  background: radial-gradient(circle at 50% 40%, #140d08, #0a0604);
+  box-shadow: inset 0 2px 4px #000, 0 1px 0 rgba(255, 220, 170, 0.1);
+  transition: background 0.3s, box-shadow 0.3s;
+}
+
+.shelf-socket.is-filled {
+  background: radial-gradient(circle at 35% 30%, #fbe3a6, #c19343 55%, #6e4b1c);
+  box-shadow: 0 0 12px rgba(245, 205, 133, 0.45);
+  animation: socketIn 0.35s var(--ease-out);
+}
+
+@keyframes socketIn {
+  from { transform: scale(0.6); }
+  to { transform: none; }
+}
+
+.shelf.is-resetting .shelf-socket {
+  background: radial-gradient(circle at 50% 40%, #3b1a17, #140806);
+  box-shadow: inset 0 0 0 1px var(--c-red), 0 0 10px rgba(192, 84, 74, 0.5);
 }
 
 .shelf.is-solved .book:disabled {
@@ -1371,6 +1410,13 @@
 
 .pager-btn:disabled {
   opacity: 0.25;
+}
+
+.pager-btn.is-unread {
+  color: #1d1307;
+  background: var(--c-amber);
+  border-color: var(--c-amber);
+  animation: brassGlow 2s ease-in-out infinite;
 }
 
 .pager-count {

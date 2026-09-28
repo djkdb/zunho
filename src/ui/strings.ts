@@ -36,7 +36,6 @@ export const UI = {
   howKeys: L('Keyboard: Tab to move · Enter to select · Esc to go back · ←/→ to look around', '키보드: Tab 이동 · Enter 선택 · Esc 뒤로 · ←/→ 둘러보기'),
 
   hint: L('Hint', '힌트'),
-  hintsUsed: L('hints used', '힌트 사용'),
   revealHint: L('Reveal hint', '힌트 보기'),
   revealNextHint: L('Reveal next hint', '다음 힌트 보기'),
   noMoreHints: L('That is every hint for this step.', '이 단계의 힌트를 모두 보았습니다.'),
@@ -68,6 +67,8 @@ export const UI = {
   nextPage: L('Next page', '다음 페이지'),
   turnOver: L('Turn over', '뒤집기'),
   holdToLamp: L('Hold it near the lamp', '램프 가까이 대기'),
+  lampOnAndHold: L('Switch the lamp on and hold it close', '램프를 켜고 가까이 대기'),
+  fitHalves: L('Fit the torn edges together', '찢어진 가장자리 맞춰 보기'),
   page: L('Page', '페이지'),
 
   lookLeft: L('Look left', '왼쪽 보기'),

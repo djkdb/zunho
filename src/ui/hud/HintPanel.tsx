@@ -41,7 +41,7 @@ export function HintPanel({ onClose }: { onClose: () => void }) {
         </>
       )}
       <p className="hint-note">
-        {hintCount} {t(UI.hintsUsed)} · {t(UI.hintCostNote)}
+        {t({ en: `${hintCount} hint${hintCount === 1 ? '' : 's'} used`, ko: `힌트 ${hintCount}회 사용` })} · {t(UI.hintCostNote)}
       </p>
     </SidePanel>
   );

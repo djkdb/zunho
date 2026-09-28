@@ -204,6 +204,10 @@ export function Room() {
       onPointerUp={endDrag}
       onPointerCancel={endDrag}
       onClickCapture={onClickCapture}
+      onClick={(e) => {
+        // Tapping bare wall while holding something simply puts it away.
+        if (heldItem && !(e.target as HTMLElement).closest('button')) dispatch({ type: 'HOLD_ITEM', item: null });
+      }}
     >
       <div
         ref={cameraRef}

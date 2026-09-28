@@ -178,6 +178,39 @@ describe('secret ending', () => {
   });
 });
 
+describe('player-friendly handling', () => {
+  it('tapping a pulled book pushes it back without breaking the sequence', () => {
+    const base = run(CRITICAL_PATH.slice(0, 19)).state;
+    const { state } = run(
+      [
+        { type: 'PULL_BOOK', book: 'feather' },
+        { type: 'PULL_BOOK', book: 'anchor' },
+        { type: 'PULL_BOOK', book: 'anchor' },
+        { type: 'PULL_BOOK', book: 'hourglass' },
+        { type: 'PULL_BOOK', book: 'candle' },
+        { type: 'PULL_BOOK', book: 'moon' },
+      ],
+      base,
+    );
+    expect(state.solvedPuzzles).toContain('bookshelf');
+    expect(state.failedAttempts).toBe(0);
+  });
+
+  it('a blocked or pointless use puts the item away so the next tap works normally', () => {
+    const path = CRITICAL_PATH.slice(0, 26);
+    const held = run([...path, { type: 'HOLD_ITEM', item: 'journal' }]).state;
+    const blocked = run([{ type: 'USE_ITEM', item: 'journal', target: 'lamp' }], held).state;
+    expect(blocked.heldItem).toBeNull();
+    const lit = run([{ type: 'OPEN_OBJECT', object: 'lamp' }], blocked).state;
+    expect(lit.flags.lampOn).toBe(true);
+  });
+
+  it('greets a brand-new player once when the intro ends', () => {
+    const { events } = run([{ type: 'BEGIN_EXPLORATION' }]);
+    expect(narrations(events)).toHaveLength(1);
+  });
+});
+
 describe('debug mode', () => {
   it('solveAll leaves a consistent state right before the door', () => {
     const { state } = run([{ type: 'BEGIN_EXPLORATION' }, { type: 'DEBUG', command: { cmd: 'solveAll' } }]);

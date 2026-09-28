@@ -30,9 +30,20 @@ export function Narration() {
       if (event.type !== 'narrate') return;
       const line: Line = { id: nextId++, text: event.text, tone: event.tone };
       setLines((current) => {
-        // Collapse exact repeats (e.g. hammering a locked drawer).
-        const withoutDup = current.filter((l) => l.text.en !== line.text.en);
-        return [...withoutDup, line].slice(-MAX_LINES);
+        let kept = current.filter((l) => {
+          // Collapse exact repeats (e.g. hammering a locked drawer).
+          if (l.text.en === line.text.en) return false;
+          // Progress makes earlier complaints obsolete.
+          if ((line.tone === 'success' || line.tone === 'discovery') && l.tone === 'error') return false;
+          // A new complaint replaces the old one rather than piling up.
+          if (line.tone === 'error' && l.tone === 'error') return false;
+          return true;
+        });
+        // Close-ups have little room: show only the newest line there.
+        const phase = gameStore.getState().phase;
+        const max = phase === 'investigation' || phase === 'puzzle' ? 1 : MAX_LINES;
+        kept = [...kept, line].slice(-max);
+        return kept;
       });
       const duration = BASE_MS + event.text.en.length * PER_CHAR_MS;
       timers.set(

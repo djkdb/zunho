@@ -12,7 +12,8 @@
     "lint": "eslint .",
     "test": "vitest run",
     "test:watch": "vitest",
-    "e2e": "node scripts/e2e.mjs"
+    "e2e": "node scripts/e2e.mjs",
+    "playtest": "node scripts/playtest.mjs"
   },
   "dependencies": {
     "@fontsource/caveat": "^5.3.0",

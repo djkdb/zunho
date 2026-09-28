@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { OBJECTS } from '../../../game/data/objects';
 import { dispatch, gameStore, playSfx, say, useGame } from '../../../game/store';
 import { IconChevronDown, IconChevronUp, IconLock } from '../../common/icons';
@@ -55,14 +55,32 @@ export function DoorScene() {
     setDigits((d) => d.map((v, i) => (i === index ? value : v)));
   }, []);
 
-  const turnHandle = () => {
+  const turnHandle = useCallback(() => {
     if (!keyInserted) {
       playSfx('locked');
       say(UI.doorLocked, 'error');
       return;
     }
     dispatch({ type: 'SUBMIT_CODE', puzzle: 'door', code: digits.join('') });
-  };
+  }, [digits, keyInserted]);
+
+  // Keyboard: type the four digits (the cursor wraps), Enter turns the handle.
+  const cursor = useRef(0);
+  useEffect(() => {
+    if (!keyInserted) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (/^[0-9]$/.test(e.key)) {
+        const index = cursor.current;
+        setDigit(index, Math.min(Number(e.key), WHEEL_MAX[index]!));
+        playSfx('clockTick');
+        cursor.current = (index + 1) % WHEEL_MAX.length;
+      } else if (e.key === 'Enter' && (e.target as HTMLElement)?.tagName !== 'BUTTON') {
+        turnHandle();
+      }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [keyInserted, setDigit, turnHandle]);
 
   return (
     <SceneFrame

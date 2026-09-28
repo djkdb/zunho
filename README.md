@@ -24,6 +24,7 @@ npm run dev          # http://localhost:5173
 | `npm run typecheck` | TypeScript strict type-check |
 | `npm test` | Unit tests for the game engine (Vitest) |
 | `npm run e2e` | End-to-end playthroughs in headless Chromium (run `npm run build` first); screenshots go to `qa-artifacts/` |
+| `npm run playtest` | First-time player simulation (Korean, phone, touch): pans to find things, makes common mistakes, uses a hint, and screenshots every step to `qa-artifacts/playtest/` |
 
 `dist/` is fully static (relative `base`), so any static host works.
 
@@ -34,6 +35,8 @@ npm run dev          # http://localhost:5173
 - **Use items:** tap an inventory item to hold it, then tap an object. While holding one item, tap another item to **combine** them.
 - **Notebook:** every clue you have found is written down automatically.
 - **Hints:** three tiers per step (direction → what to observe → nearly the answer). Hints you use are counted on the results screen.
+- **Forgiving by design:** tap a pulled book again to push it back (brass sockets under the shelf show your order); an item that doesn't fit is put away automatically; an inspected torn note offers to fit its other half; documents pulse their next-page arrow until every page is read.
+- **Keyboard shortcuts in close-ups:** type digits on the safe and on the door dial, Enter to confirm.
 - **Keyboard:** Tab / Enter to interact, Esc to go back, ←/→ to look around, digits and Enter on the safe keypad.
 - Progress **saves automatically**. `CONTINUE` resumes it and `NEW GAME` erases it.
 
