@@ -66,6 +66,7 @@ export function Inventory() {
               onClick={() => onSlot(item)}
               onDoubleClick={() => dispatch({ type: 'OPEN_ITEM', item })}
               aria-pressed={held === item}
+              data-item={item}
               aria-label={t(ITEMS[item].name)}
               title={t(ITEMS[item].name)}
             >

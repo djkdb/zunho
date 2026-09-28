@@ -20,6 +20,29 @@
   overflow: hidden;
   touch-action: none;
   cursor: default;
+  /* Ultra-wide screens show a little beyond the stage: continue the wall and floor into the dark. */
+  background: linear-gradient(180deg, #070605 0%, #120e0b 55%, #0d0906 84%, #140e0a 86%, #0a0705 100%);
+}
+
+.room.is-letterboxed .room-camera::before,
+.room.is-letterboxed .room-camera::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 140px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+.room.is-letterboxed .room-camera::before {
+  left: -1px;
+  background: linear-gradient(90deg, #070605, transparent);
+}
+
+.room.is-letterboxed .room-camera::after {
+  right: -1px;
+  background: linear-gradient(270deg, #070605, transparent);
 }
 
 .room-camera {

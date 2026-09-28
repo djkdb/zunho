@@ -66,6 +66,7 @@ export function DoorScene() {
 
   // Keyboard: type the four digits (the cursor wraps), Enter turns the handle.
   const cursor = useRef(0);
+  const turnRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     if (!keyInserted) return;
     const onKey = (e: KeyboardEvent) => {
@@ -74,6 +75,8 @@ export function DoorScene() {
         setDigit(index, Math.min(Number(e.key), WHEEL_MAX[index]!));
         playSfx('clockTick');
         cursor.current = (index + 1) % WHEEL_MAX.length;
+        // Next Enter should turn the handle, not press whichever arrow has focus.
+        turnRef.current?.focus({ preventScroll: true });
       } else if (e.key === 'Enter' && (e.target as HTMLElement)?.tagName !== 'BUTTON') {
         turnHandle();
       }
@@ -125,7 +128,7 @@ export function DoorScene() {
             <span aria-hidden="true" />
           </button>
         </div>
-        <button type="button" className="brass-button door-turn" onClick={turnHandle}>
+        <button ref={turnRef} type="button" className="brass-button door-turn" onClick={turnHandle}>
           {t(UI.turnHandle)}
         </button>
       </div>

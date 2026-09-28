@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { OBJECTS } from '../../../game/data/objects';
 import { dispatch, gameStore, playSfx, useGame } from '../../../game/store';
 import { fxBus } from '../../fx/fxBus';
@@ -72,11 +72,15 @@ export function SafeScene() {
     [code, stage],
   );
 
-  // Physical keyboard support.
+  // Physical keyboard support. Typing moves focus to ⏎, so the next Enter submits
+  // instead of "clicking" whichever keypad button happened to have focus.
+  const enterRef = useRef<HTMLButtonElement>(null);
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      if (/^[0-9]$/.test(e.key)) press(e.key);
-      else if (e.key === 'Backspace') {
+      if (/^[0-9]$/.test(e.key)) {
+        press(e.key);
+        enterRef.current?.focus({ preventScroll: true });
+      } else if (e.key === 'Backspace') {
         setCode((c) => c.slice(0, -1));
         playSfx('keypad');
       } else if (e.key === 'Enter' && (e.target as HTMLElement)?.tagName !== 'BUTTON') press('E');
@@ -135,6 +139,7 @@ export function SafeScene() {
                 {KEYS.map((key) => (
                   <button
                     key={key}
+                    ref={key === 'E' ? enterRef : undefined}
                     type="button"
                     className={`keypad-key ${key === 'E' ? 'keypad-key--enter' : ''} ${key === 'C' ? 'keypad-key--clear' : ''}`}
                     onClick={() => press(key)}

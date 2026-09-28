@@ -259,3 +259,50 @@
   letter-spacing: 0.08em;
   color: rgba(185, 176, 160, 0.4);
 }
+
+/* Short landscape screens: title and menu side by side-ish, everything reachable. */
+.menu {
+  overflow-y: auto;
+}
+
+@media (max-height: 560px) and (orientation: landscape) {
+  .menu-main {
+    padding: 12px 0 40px;
+    gap: 4px;
+  }
+
+  .menu-title {
+    font-size: min(15vh, 64px);
+  }
+
+  .menu-tagline {
+    margin-bottom: 10px;
+    font-size: 14px;
+  }
+
+  .menu-list {
+    display: grid;
+    grid-template-columns: repeat(2, auto);
+    justify-content: center;
+    column-gap: 18px;
+  }
+
+  .menu-item {
+    min-height: 44px;
+    padding: 4px 18px;
+    font-size: 17px;
+  }
+
+  .menu-item--small {
+    font-size: 12px;
+  }
+
+  .menu-panel {
+    max-height: calc(100dvh - 150px);
+    overflow-y: auto;
+  }
+
+  .menu-footer {
+    display: none;
+  }
+}

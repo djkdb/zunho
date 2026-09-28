@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useLayoutEffect, useRef, type ReactNode } from 'react';
 import { ITEMS } from '../../game/data/items';
 import { dispatch, useGame } from '../../game/store';
 import type { ItemId, TargetId } from '../../game/types';
@@ -14,17 +14,52 @@ interface SceneFrameProps {
   actions?: ReactNode;
 }
 
+/**
+ * Scales a close-up down (never up) so it always fits the space it is given —
+ * landscape phones and short laptop screens included — instead of pushing
+ * keypads or buttons off-screen.
+ */
+function useFitToParent(): { outer: React.RefObject<HTMLDivElement | null>; inner: React.RefObject<HTMLDivElement | null> } {
+  const outer = useRef<HTMLDivElement>(null);
+  const inner = useRef<HTMLDivElement>(null);
+  useLayoutEffect(() => {
+    const box = outer.current;
+    const content = inner.current;
+    if (!box || !content) return;
+    let frame = 0;
+    const fit = () => {
+      cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(() => {
+        const scale = Math.min(1, box.clientWidth / content.offsetWidth, box.clientHeight / content.offsetHeight);
+        content.style.transform = scale < 0.999 ? `scale(${Math.max(0.4, scale)})` : '';
+      });
+    };
+    fit();
+    const observer = new ResizeObserver(fit);
+    observer.observe(box);
+    observer.observe(content);
+    return () => {
+      cancelAnimationFrame(frame);
+      observer.disconnect();
+    };
+  }, []);
+  return { outer, inner };
+}
+
 export function SceneFrame({ id, title, caption, children, actions }: SceneFrameProps) {
   const t = useT();
+  const { outer, inner } = useFitToParent();
   return (
-    <div className={`scene scene--${id}`}>
-      <header className="scene-head">
-        <p className="scene-kicker">{t(UI.sceneOpen)}</p>
-        <h2 id="scene-title">{title}</h2>
-      </header>
-      <div className="scene-body">{children}</div>
-      {caption && <div className="scene-caption">{caption}</div>}
-      {actions && <div className="scene-actions">{actions}</div>}
+    <div ref={outer} className="scene-fit">
+      <div ref={inner} className={`scene scene--${id}`}>
+        <header className="scene-head">
+          <p className="scene-kicker">{t(UI.sceneOpen)}</p>
+          <h2 id="scene-title">{title}</h2>
+        </header>
+        <div className="scene-body">{children}</div>
+        {caption && <div className="scene-caption">{caption}</div>}
+        {actions && <div className="scene-actions">{actions}</div>}
+      </div>
     </div>
   );
 }

@@ -407,8 +407,8 @@
   position: fixed;
   inset: 0;
   z-index: 70;
-  display: grid;
-  place-items: center;
+  display: flex;
+  flex-direction: column;
   padding: calc(20px + var(--safe-top)) 16px calc(20px + var(--safe-bottom));
   overflow-y: auto;
   background: #fffaf0;
@@ -448,6 +448,7 @@
 
 .ending-card {
   position: relative;
+  margin: auto;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -529,7 +530,8 @@
 
 .ending-achievements {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 8px;
   width: 100%;
   margin: 0;
@@ -537,14 +539,15 @@
   list-style: none;
 }
 
+/* Compact badges keep PLAY AGAIN on screen however many achievements unlock. */
 .ending-achievements li {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 12px;
-  padding: 8px 12px;
-  text-align: left;
-  background: rgba(227, 178, 101, 0.08);
-  border-left: 2px solid var(--c-amber);
+  gap: 8px;
+  padding: 6px 14px 6px 10px;
+  background: rgba(227, 178, 101, 0.1);
+  border: 1px solid rgba(227, 178, 101, 0.4);
+  border-radius: 999px;
   opacity: 0;
   animation: riseIn 0.7s var(--ease-out) forwards;
 }
@@ -555,15 +558,19 @@
 }
 
 .ending-achievements strong {
-  display: block;
-  font-size: 13px;
-  letter-spacing: 0.16em;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
   color: var(--c-bone);
 }
 
 .ending-achievements small {
-  font-size: 13px;
-  color: var(--c-gray);
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
 }
 
 .ending-actions {
@@ -572,4 +579,60 @@
   justify-content: center;
   gap: 4px 12px;
   margin-top: 6px;
+}
+
+/* Short screens: the result card must show its buttons without scrolling. */
+@media (max-height: 720px) {
+  .ending-card {
+    gap: 8px;
+    padding-top: 22px;
+    padding-bottom: 14px;
+  }
+
+  .ending-title {
+    font-size: clamp(30px, 7vh, 48px);
+  }
+
+  .ending-lines p {
+    font-size: 15px;
+    line-height: 1.4;
+  }
+
+  .ending-stats {
+    margin-top: 4px;
+    padding: 10px 0;
+  }
+
+  .ending-stats dd {
+    font-size: 22px;
+  }
+}
+
+@media (max-height: 560px) and (orientation: landscape) {
+  .ending-card {
+    width: min(760px, 100%);
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    column-gap: 28px;
+  }
+
+  .ending-kicker,
+  .ending-title,
+  .ending-lines {
+    grid-column: 1;
+  }
+
+  .ending-stats,
+  .ending-achievements,
+  .ending-actions {
+    grid-column: 2;
+  }
+
+  .ending-kicker { grid-row: 1; }
+  .ending-title { grid-row: 2; }
+  .ending-lines { grid-row: 3 / span 2; }
+  .ending-stats { grid-row: 1 / span 2; }
+  .ending-achievements { grid-row: 3; }
+  .ending-actions { grid-row: 4; }
 }

@@ -72,7 +72,7 @@ export function EndingScreen({ onPlayAgain, onNewGame }: EndingScreenProps) {
             {earned.map((id, i) => {
               const def = ACHIEVEMENTS.find((a) => a.id === id)!;
               return (
-                <li key={id} style={{ animationDelay: `${2.6 + i * 0.35}s` }}>
+                <li key={id} style={{ animationDelay: `${2 + i * 0.3}s` }} title={t(def.description)}>
                   <IconTrophy size={18} />
                   <span>
                     <strong>{t(def.title)}</strong>

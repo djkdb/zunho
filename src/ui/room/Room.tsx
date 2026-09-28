@@ -42,22 +42,28 @@ interface Layout {
   stageH: number;
   offsetY: number;
   minPan: number;
+  /** Horizontal offset used when the whole room fits (centred). */
+  centerPan: number;
   pannable: boolean;
 }
 
+/** On very wide screens, never crop more than this share of the room's height (clock and painting stay whole). */
+const MAX_VERTICAL_CROP = 0.13;
+
 function computeLayout(vw: number, vh: number): Layout {
   const ratio = vw / vh;
-  const scale = ratio < WIDE_RATIO ? vh / STAGE_HEIGHT : vw / STAGE_WIDTH;
+  const scale =
+    ratio < WIDE_RATIO ? vh / STAGE_HEIGHT : Math.min(vw / STAGE_WIDTH, vh / (STAGE_HEIGHT * (1 - MAX_VERTICAL_CROP)));
   const stageW = STAGE_WIDTH * scale;
   const stageH = STAGE_HEIGHT * scale;
   // When the room is taller than the screen, crop more ceiling than floor.
   const offsetY = stageH > vh ? (vh - stageH) * 0.6 : (vh - stageH) / 2;
   const minPan = Math.min(0, vw - stageW);
-  return { scale, stageW, stageH, offsetY, minPan, pannable: stageW > vw + 1 };
+  return { scale, stageW, stageH, offsetY, minPan, centerPan: Math.max(0, (vw - stageW) / 2), pannable: stageW > vw + 1 };
 }
 
 function clampPan(pan: number, layout: Layout): number {
-  if (!layout.pannable) return (layout.minPan) / 2;
+  if (!layout.pannable) return layout.centerPan;
   return Math.max(layout.minPan, Math.min(0, pan));
 }
 
@@ -198,7 +204,7 @@ export function Room() {
 
   return (
     <div
-      className={`room ${focus ? 'is-focused' : ''} ${heldItem ? 'is-holding' : ''}`}
+      className={`room ${focus ? 'is-focused' : ''} ${heldItem ? 'is-holding' : ''} ${layout.centerPan > 0 ? 'is-letterboxed' : ''}`}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={endDrag}

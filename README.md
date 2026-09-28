@@ -24,6 +24,9 @@ npm run dev          # http://localhost:5173
 | `npm run typecheck` | TypeScript strict type-check |
 | `npm test` | Unit tests for the game engine (Vitest) |
 | `npm run e2e` | End-to-end playthroughs in headless Chromium (run `npm run build` first); screenshots go to `qa-artifacts/` |
+| `npm run playtest:keyboard` | Keyboard-only persona (Tab / Enter / Esc / digits) from title to ending |
+| `npm run playtest:explorer` | Explorer persona: examines everything, misuses items, burns hints, switches language and refreshes mid-scene |
+| `npm run screens [ko\|en]` | Layout sweep of every screen at phone-landscape, small phone, tablet, laptop and ultrawide sizes; flags any button pushed off-screen |
 | `npm run playtest` | First-time player simulation (Korean, phone, touch): pans to find things, makes common mistakes, uses a hint, and screenshots every step to `qa-artifacts/playtest/` |
 
 `dist/` is fully static (relative `base`), so any static host works.

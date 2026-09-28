@@ -65,14 +65,33 @@
   border-color: var(--c-amber-line);
 }
 
+/* Rows are pinned to the viewport so oversized scenes are scaled, not allowed to grow the layout. */
+.investigation,
+.investigation-stage,
+.scene-fit {
+  grid-template-rows: minmax(0, 1fr);
+  grid-template-columns: minmax(0, 1fr);
+  min-height: 0;
+  min-width: 0;
+}
+
+.scene-fit {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 100%;
+  pointer-events: none !important;
+}
+
 .scene {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 10px;
   width: min(980px, 100%);
-  max-height: 100%;
   text-align: center;
+  transform-origin: center center;
+  pointer-events: auto;
 }
 
 .scene-head {
@@ -389,7 +408,7 @@
 
 .painting-canvas {
   position: relative;
-  width: min(680px, 92vw, calc((100dvh - 330px) * 1.36));
+  width: min(680px, 92vw, max(360px, calc((100dvh - 330px) * 1.36)));
   aspect-ratio: 600 / 440;
   overflow: hidden;
   box-shadow: 0 30px 70px rgba(0, 0, 0, 0.85);
@@ -715,7 +734,7 @@
 
 .safe-body {
   position: relative;
-  width: min(430px, 92vw, calc((100dvh - 300px) * 0.82));
+  width: min(430px, 92vw, max(300px, calc((100dvh - 300px) * 0.82)));
   aspect-ratio: 0.82;
   background: linear-gradient(135deg, #26302b, #0c100e);
   border-radius: 14px;
@@ -1289,7 +1308,7 @@
   position: relative;
   width: min(520px, 92vw);
   min-height: min(300px, 42dvh);
-  max-height: calc(100dvh - 330px);
+  max-height: max(300px, calc(100dvh - 330px));
   overflow-y: auto;
   padding: clamp(22px, 5vw, 40px);
   text-align: left;
@@ -1429,7 +1448,7 @@
 /* Photograph (flips) */
 .photo {
   position: relative;
-  width: min(520px, 90vw, calc((100dvh - 340px) * 1.33));
+  width: min(520px, 90vw, max(320px, calc((100dvh - 340px) * 1.33)));
   aspect-ratio: 4 / 3;
   perspective: 1200px;
   transform-style: preserve-3d;
@@ -1579,6 +1598,45 @@
   }
 
   .investigation {
-    padding-top: 48px;
+    padding: calc(52px + var(--safe-top)) 62px calc(8px + var(--safe-bottom)) 100px;
   }
+
+  .investigation-back {
+    top: calc(8px + var(--safe-top));
+    left: 96px;
+  }
+
+  /* Wide and short: lay the clock out in a row. */
+  .clock-layout {
+    grid-template-columns: auto auto auto;
+    grid-template-areas: 'face controls case';
+    gap: 20px;
+  }
+
+  .clock-face {
+    width: min(64dvh, 300px);
+  }
+
+  .clock-case {
+    width: 110px;
+    height: 150px;
+  }
+
+  /* Door close-up: dial and hardware side by side. */
+  .door-close {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      'dial hardware'
+      'turn turn';
+  }
+
+  .door-bolt {
+    display: none;
+  }
+}
+
+/* Only the newest subtitle matters inside a close-up. */
+.phase-investigation .narration-line:not(:last-child),
+.phase-puzzle .narration-line:not(:last-child) {
+  display: none;
 }

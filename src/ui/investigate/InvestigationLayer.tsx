@@ -49,10 +49,21 @@ export function InvestigationLayer() {
 
   // Move focus into the scene for keyboard and screen reader users.
   const key = scene ? sceneKey(scene) : null;
+  const lastKey = useRef<string | null>(null);
   useEffect(() => {
-    if (!key) return;
-    const el = rootRef.current?.querySelector<HTMLElement>('.scene button:not([disabled]), .scene [tabindex="0"]');
-    (el ?? rootRef.current)?.focus({ preventScroll: true });
+    const previous = lastKey.current;
+    lastKey.current = key;
+    if (key) {
+      const el = rootRef.current?.querySelector<HTMLElement>('.scene button:not([disabled]), .scene [tabindex="0"]');
+      (el ?? rootRef.current)?.focus({ preventScroll: true });
+      return;
+    }
+    // Closed: hand focus back to whatever opened the close-up, like any well-behaved dialog.
+    if (!previous) return;
+    const [kind, id] = previous.split(':');
+    const selector = kind === 'o' ? `[data-object="${id}"]` : `[data-item="${id}"]`;
+    const frame = requestAnimationFrame(() => document.querySelector<HTMLElement>(selector)?.focus({ preventScroll: true }));
+    return () => cancelAnimationFrame(frame);
   }, [key]);
 
   if (!scene) return null;
