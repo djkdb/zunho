@@ -1,0 +1,575 @@
+/* ==========================================================================
+   Cinematics — intro, escape, ending, FX
+   ========================================================================== */
+
+/* ---------------------------------------------------------------- */
+/* FX                                                                */
+/* ---------------------------------------------------------------- */
+
+.fx-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 45;
+  pointer-events: none;
+}
+
+.fx-particles {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.fx-flash {
+  position: absolute;
+  inset: 0;
+  background: #fff;
+  mix-blend-mode: screen;
+  animation: flash 0.85s ease-out both;
+}
+
+.fx-flash--warm {
+  background: radial-gradient(circle at 50% 50%, #ffd99a, rgba(255, 170, 80, 0.4) 60%, transparent);
+}
+
+@keyframes flash {
+  0% { opacity: 0.85; }
+  100% { opacity: 0; }
+}
+
+.fx-fly {
+  position: absolute;
+  left: 50%;
+  top: 45%;
+  width: 150px;
+  height: 150px;
+  margin: -75px 0 0 -75px;
+  filter: drop-shadow(0 0 24px rgba(255, 205, 130, 0.8));
+  animation: flyToPocket 1.05s cubic-bezier(0.5, 0, 0.3, 1) both;
+}
+
+.fx-fly svg {
+  width: 100%;
+  height: 100%;
+}
+
+@keyframes flyToPocket {
+  0% { transform: scale(0.6); opacity: 0; }
+  25% { transform: scale(1.1); opacity: 1; }
+  45% { transform: scale(1); opacity: 1; }
+  100% { transform: translateY(calc(50dvh - 60px)) scale(0.3); opacity: 0; }
+}
+
+/* ---------------------------------------------------------------- */
+/* Intro — Scene A                                                   */
+/* ---------------------------------------------------------------- */
+
+.intro {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  pointer-events: auto;
+}
+
+.intro-lid {
+  position: absolute;
+  left: -5%;
+  right: -5%;
+  height: 52%;
+  background: #000;
+  transition: transform 2.1s cubic-bezier(0.7, 0, 0.2, 1);
+}
+
+.intro-lid--top {
+  top: 0;
+  border-radius: 0 0 50% 50% / 0 0 18% 18%;
+}
+
+.intro-lid--bottom {
+  bottom: 0;
+  border-radius: 50% 50% 0 0 / 18% 18% 0 0;
+}
+
+.intro.is-opening .intro-lid--top {
+  transform: translateY(-104%);
+}
+
+.intro.is-opening .intro-lid--bottom {
+  transform: translateY(104%);
+}
+
+.intro:not(.is-opening) {
+  background: #000;
+}
+
+.intro.is-opening {
+  pointer-events: none;
+}
+
+.intro::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  opacity: 1;
+  transition: opacity 2.6s ease;
+  pointer-events: none;
+}
+
+.intro.is-opening::after {
+  opacity: 0;
+}
+
+.intro-lines {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  width: min(760px, 88vw);
+  text-align: center;
+}
+
+.intro-line {
+  grid-area: 1 / 1;
+  font-family: var(--f-display);
+  font-size: clamp(24px, 3.4vw, 38px);
+  font-weight: 500;
+  font-style: italic;
+  line-height: 1.35;
+  color: var(--c-bone);
+  opacity: 0;
+  filter: blur(8px);
+  transform: translateY(8px);
+  transition: opacity 1s ease, filter 1.2s ease, transform 1.4s var(--ease-out);
+}
+
+:lang(ko) .intro-line {
+  font-style: normal;
+  font-size: clamp(21px, 3vw, 32px);
+}
+
+.intro-line.is-visible {
+  opacity: 1;
+  filter: blur(0);
+  transform: none;
+}
+
+.intro-skip {
+  position: absolute;
+  z-index: 2;
+  right: 18px;
+  bottom: calc(18px + var(--safe-bottom));
+  min-height: 44px;
+  padding: 8px 16px;
+  font-size: 13px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgba(232, 223, 204, 0.5);
+  transition: color 0.2s;
+}
+
+.intro-skip:hover {
+  color: var(--c-amber-strong);
+}
+
+/* ---------------------------------------------------------------- */
+/* Escape — Scenes E & F                                             */
+/* ---------------------------------------------------------------- */
+
+.escape {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: radial-gradient(ellipse at 50% 50%, #1c150f, #030202 75%);
+  animation: fadeIn 0.6s ease both;
+  perspective: 1400px;
+}
+
+.escape-light {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse 40% 60% at 50% 50%, #fff6e2, #ffe1a6 30%, rgba(255, 200, 120, 0) 70%);
+  opacity: 0;
+  transform: scale(0.4);
+  transition: opacity 1.8s ease, transform 2.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.escape--secret .escape-light {
+  background: radial-gradient(ellipse 40% 60% at 50% 50%, #fff3d0, #ffc56e 30%, rgba(255, 150, 60, 0) 72%);
+}
+
+.escape.at-open .escape-light {
+  opacity: 1;
+  transform: scale(1.6);
+}
+
+.escape-frame {
+  position: relative;
+  width: min(62vh, 80vw);
+  aspect-ratio: 0.5;
+  max-height: 88dvh;
+  background: #fff5dc;
+  perspective: 1600px;
+  box-shadow: 0 0 0 18px #1b120d, 0 40px 120px rgba(0, 0, 0, 0.95);
+  transform: scale(0.96);
+  transition: transform 6s cubic-bezier(0.3, 0, 0.2, 1);
+}
+
+.escape.at-dial .escape-frame {
+  transform: scale(1);
+}
+
+.escape.at-open .escape-frame {
+  transform: scale(1.35);
+}
+
+.escape.at-white .escape-frame {
+  transform: scale(2.4);
+}
+
+.escape-door {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.3), transparent 20%, transparent 80%, rgba(0, 0, 0, 0.4)),
+    linear-gradient(180deg, #45311f, #35261b);
+  transform-origin: left center;
+  transition: transform 2.6s cubic-bezier(0.5, 0, 0.15, 1);
+  box-shadow: inset 0 0 0 1px rgba(255, 220, 170, 0.06);
+}
+
+.escape.at-open .escape-door {
+  transform: rotateY(-82deg);
+  box-shadow: inset 0 0 0 1px rgba(255, 220, 170, 0.06), -30px 0 60px rgba(0, 0, 0, 0.5);
+}
+
+.escape-door-panels {
+  position: absolute;
+  inset: 6% 9%;
+  background:
+    linear-gradient(#2c1e15, #2c1e15) 0 0 / 44% 30% no-repeat,
+    linear-gradient(#2c1e15, #2c1e15) 100% 0 / 44% 30% no-repeat,
+    linear-gradient(#2c1e15, #2c1e15) 0 100% / 44% 58% no-repeat,
+    linear-gradient(#2c1e15, #2c1e15) 100% 100% / 44% 58% no-repeat;
+  filter: drop-shadow(-2px -2px 0 #120c08) drop-shadow(1px 1px 0 rgba(120, 90, 60, 0.4));
+}
+
+.escape-bolt {
+  position: absolute;
+  right: -4%;
+  width: 30%;
+  height: 3.5%;
+  background: linear-gradient(180deg, #9a9da1, #3a3c3f);
+  border-radius: 3px;
+  transition: transform 0.55s cubic-bezier(0.5, 0, 0.2, 1.3);
+}
+
+.escape-bolt--1 {
+  top: 18%;
+}
+
+.escape-bolt--2 {
+  top: 82%;
+}
+
+.escape.at-bolt1 .escape-bolt--1,
+.escape.at-bolt2 .escape-bolt--2 {
+  transform: translateX(-60%);
+}
+
+.escape-dial {
+  position: absolute;
+  left: 50%;
+  top: 36%;
+  display: flex;
+  gap: 4px;
+  padding: 6px 10px;
+  transform: translateX(-50%);
+  font-family: var(--f-mono);
+  font-size: clamp(16px, 2.6vh, 24px);
+  color: var(--c-bone);
+  background: linear-gradient(180deg, var(--c-brass-1), var(--c-brass-2));
+  border-radius: 6px;
+}
+
+.escape-dial span,
+.escape-dial i {
+  display: grid;
+  place-items: center;
+  min-width: 1.2em;
+  padding: 2px;
+  background: #140f0a;
+  border-radius: 2px;
+  font-style: normal;
+  transition: color 0.4s, text-shadow 0.4s;
+}
+
+.escape-dial i {
+  background: none;
+  color: #3b2508;
+}
+
+.escape.at-dial .escape-dial span {
+  color: var(--c-amber-strong);
+  text-shadow: 0 0 12px rgba(245, 205, 133, 0.9);
+}
+
+.escape-handle {
+  position: absolute;
+  right: 10%;
+  top: 52%;
+  width: 26%;
+  height: 2.6%;
+  background: linear-gradient(180deg, #f0cf86, #8a6428);
+  border-radius: 8px;
+  transform-origin: right center;
+  transition: transform 0.6s cubic-bezier(0.5, 0, 0.3, 1.4);
+}
+
+.escape-handle::after {
+  content: '';
+  position: absolute;
+  right: -6%;
+  top: 50%;
+  width: 22%;
+  aspect-ratio: 1;
+  transform: translateY(-50%);
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fbe3a6, #b8893c 55%, #5e4018);
+}
+
+.escape.at-handle .escape-handle {
+  transform: rotate(-38deg);
+}
+
+.escape-key {
+  position: absolute;
+  right: 12%;
+  top: 60%;
+  width: 7%;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background: radial-gradient(circle, #1d1f22 38%, #6c6f73 40%, #2a2c2f 70%);
+}
+
+.escape-flicker {
+  position: absolute;
+  inset: 0;
+  background: #000;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.escape.at-flicker:not(.at-open) .escape-flicker {
+  animation: flicker 0.7s steps(1) both;
+}
+
+@keyframes flicker {
+  0% { opacity: 0.7; }
+  15% { opacity: 0; }
+  30% { opacity: 0.85; }
+  45% { opacity: 0.1; }
+  60% { opacity: 0.6; }
+  100% { opacity: 0; }
+}
+
+.escape-white {
+  position: absolute;
+  inset: 0;
+  background: #fffaf0;
+  opacity: 0;
+  transition: opacity 1.4s ease-in;
+  pointer-events: none;
+}
+
+.escape--secret .escape-white {
+  background: #fff1d2;
+}
+
+.escape.at-white .escape-white {
+  opacity: 1;
+}
+
+.escape .intro-skip {
+  z-index: 3;
+}
+
+/* ---------------------------------------------------------------- */
+/* Ending                                                            */
+/* ---------------------------------------------------------------- */
+
+.ending {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: grid;
+  place-items: center;
+  padding: calc(20px + var(--safe-top)) 16px calc(20px + var(--safe-bottom));
+  overflow-y: auto;
+  background: #fffaf0;
+  animation: endingFromWhite 2.6s ease both;
+}
+
+@keyframes endingFromWhite {
+  from { background-color: #fffaf0; }
+  to { background-color: #0d0f12; }
+}
+
+.ending--secret {
+  animation-name: endingFromGold;
+}
+
+@keyframes endingFromGold {
+  from { background-color: #fff1d2; }
+  to { background-color: #120d08; }
+}
+
+.ending-sky {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 90% 60% at 50% 110%, rgba(170, 190, 215, 0.35), transparent 70%),
+    linear-gradient(180deg, #0b0d12 0%, #1c2230 60%, #3b3f4a 100%);
+  opacity: 0;
+  animation: fadeIn 3s 1s ease forwards;
+}
+
+.ending--secret .ending-sky {
+  background:
+    radial-gradient(ellipse 90% 60% at 50% 110%, rgba(255, 176, 90, 0.5), transparent 70%),
+    linear-gradient(180deg, #0d0a08 0%, #2a1c14 55%, #6b3f22 100%);
+}
+
+.ending-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: min(520px, 100%);
+  padding: clamp(28px, 6vw, 44px) clamp(20px, 5vw, 40px) 24px;
+  text-align: center;
+  background: linear-gradient(180deg, rgba(14, 12, 10, 0.78), rgba(8, 7, 6, 0.9));
+  border-top: 1px solid var(--c-amber-line);
+  border-bottom: 1px solid rgba(227, 178, 101, 0.12);
+  box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6);
+  opacity: 0;
+  animation: riseIn 1.2s 1.2s var(--ease-out) forwards;
+}
+
+.ending-kicker {
+  font-size: 12px;
+  letter-spacing: 0.45em;
+  color: var(--c-amber);
+}
+
+.ending--secret .ending-kicker {
+  color: #f0a58a;
+}
+
+.ending-title {
+  font-family: var(--f-display);
+  font-size: clamp(40px, 8vw, 64px);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: 0.06em;
+  color: #fbf4e4;
+  text-shadow: 0 0 40px rgba(255, 230, 190, 0.35);
+}
+
+.ending-lines p {
+  font-family: var(--f-display);
+  font-style: italic;
+  font-size: clamp(17px, 2.4vw, 20px);
+  color: var(--c-muted);
+  opacity: 0;
+  animation: riseIn 1s var(--ease-out) forwards;
+}
+
+:lang(ko) .ending-lines p {
+  font-style: normal;
+  font-size: 17px;
+}
+
+.ending-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  width: 100%;
+  margin: 10px 0 0;
+  padding: 16px 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.ending-stats div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.ending-stats dt {
+  font-size: 11px;
+  letter-spacing: 0.2em;
+  color: var(--c-gray);
+}
+
+.ending-stats dd {
+  margin: 0;
+  font-family: var(--f-mono);
+  font-size: clamp(22px, 4vw, 30px);
+  color: var(--c-amber-strong);
+}
+
+.ending-achievements {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.ending-achievements li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 12px;
+  text-align: left;
+  background: rgba(227, 178, 101, 0.08);
+  border-left: 2px solid var(--c-amber);
+  opacity: 0;
+  animation: riseIn 0.7s var(--ease-out) forwards;
+}
+
+.ending-achievements svg {
+  flex: none;
+  color: var(--c-amber);
+}
+
+.ending-achievements strong {
+  display: block;
+  font-size: 13px;
+  letter-spacing: 0.16em;
+  color: var(--c-bone);
+}
+
+.ending-achievements small {
+  font-size: 13px;
+  color: var(--c-gray);
+}
+
+.ending-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 4px 12px;
+  margin-top: 6px;
+}

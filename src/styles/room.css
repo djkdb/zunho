@@ -1,0 +1,259 @@
+/* ==========================================================================
+   The room: camera, art, hotspots
+   ========================================================================== */
+
+.game {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: var(--c-void);
+}
+
+.game-world {
+  position: absolute;
+  inset: 0;
+}
+
+.room {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  touch-action: none;
+  cursor: default;
+}
+
+.room-camera {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform-origin: 0 0;
+  transition: transform 1s var(--ease-camera);
+  will-change: transform;
+}
+
+.room-art {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.room-art .room-light {
+  transition: opacity 1.1s ease;
+}
+
+.room-art .room-lamp-bulb {
+  transition: opacity 0.6s ease;
+}
+
+.room-art .art {
+  transition: filter 0.35s ease;
+}
+
+/* Hovering or focusing a hotspot lifts its object out of the dark. */
+.room:has(.hotspot--door:is(:hover, :focus-visible)) .art--door,
+.room:has(.hotspot--clock:is(:hover, :focus-visible)) .art--clock,
+.room:has(.hotspot--painting:is(:hover, :focus-visible)) .art--painting,
+.room:has(.hotspot--window:is(:hover, :focus-visible)) .art--window,
+.room:has(.hotspot--drawer:is(:hover, :focus-visible)) .art--desk,
+.room:has(.hotspot--memo:is(:hover, :focus-visible)) .art--desk,
+.room:has(.hotspot--lamp:is(:hover, :focus-visible)) .art--lamp,
+.room:has(.hotspot--basket:is(:hover, :focus-visible)) .art--basket,
+.room:has(.hotspot--safe:is(:hover, :focus-visible)) .art--safe,
+.room:has(.hotspot--bookshelf:is(:hover, :focus-visible)) .art--bookshelf {
+  filter: brightness(1.45) saturate(1.1);
+}
+
+/* ---------------------------------------------------------------- */
+/* Hotspots                                                          */
+/* ---------------------------------------------------------------- */
+
+.room-hotspots {
+  position: absolute;
+  inset: 0;
+}
+
+.hotspot {
+  position: absolute;
+  border-radius: 14px;
+  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><circle cx='13' cy='13' r='8' fill='none' stroke='%23f5cd85' stroke-width='2'/><path d='M19 19l8 8' stroke='%23f5cd85' stroke-width='2.5' stroke-linecap='round'/></svg>") 13 13, pointer;
+  transition: transform 0.3s var(--ease-out);
+}
+
+.room.is-holding .hotspot {
+  cursor: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='32' height='32' viewBox='0 0 32 32'><path d='M6 16h14M14 10l6 6-6 6' fill='none' stroke='%23f5cd85' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/><circle cx='25' cy='16' r='3' fill='%23f5cd85'/></svg>") 16 16, pointer;
+}
+
+.hotspot:disabled {
+  pointer-events: none;
+}
+
+.hotspot:focus-visible {
+  outline: none;
+}
+
+.hotspot-glow {
+  position: absolute;
+  inset: -14px;
+  border-radius: 24px;
+  opacity: 0;
+  background: radial-gradient(ellipse at center, rgba(255, 205, 130, 0.16), rgba(255, 205, 130, 0.04) 55%, transparent 72%);
+  box-shadow: inset 0 0 0 1px rgba(255, 214, 150, 0.1);
+  transition: opacity 0.35s ease;
+  pointer-events: none;
+}
+
+.hotspot:hover .hotspot-glow,
+.hotspot:focus-visible .hotspot-glow {
+  opacity: 1;
+}
+
+.hotspot:focus-visible .hotspot-glow {
+  box-shadow: inset 0 0 0 2px rgba(245, 205, 133, 0.7);
+}
+
+.room.is-holding .hotspot .hotspot-glow {
+  opacity: 0.45;
+  animation: targetPulse 1.8s ease-in-out infinite;
+}
+
+@keyframes targetPulse {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.6; }
+}
+
+/* A glint — the only unprompted hint that an object is worth a look. */
+.hotspot-glint {
+  position: absolute;
+  left: 50%;
+  top: 30%;
+  width: 26px;
+  height: 26px;
+  margin: -13px 0 0 -13px;
+  pointer-events: none;
+  background:
+    linear-gradient(90deg, transparent 45%, rgba(255, 236, 190, 0.95) 50%, transparent 55%),
+    linear-gradient(0deg, transparent 45%, rgba(255, 236, 190, 0.95) 50%, transparent 55%);
+  border-radius: 50%;
+  filter: drop-shadow(0 0 6px rgba(255, 210, 140, 0.9));
+  opacity: 0;
+  animation: glint 9s ease-in-out infinite;
+}
+
+@keyframes glint {
+  0%, 88%, 100% { opacity: 0; transform: scale(0.3) rotate(0deg); }
+  92% { opacity: 0.95; transform: scale(1) rotate(45deg); }
+  96% { opacity: 0; transform: scale(0.5) rotate(90deg); }
+}
+
+.hotspot-label {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 18px);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: max-content;
+  padding: 8px 16px;
+  text-align: center;
+  white-space: nowrap;
+  pointer-events: none;
+  opacity: 0;
+  transform: translate(-50%, 6px);
+  transition: opacity 0.3s, transform 0.3s var(--ease-out);
+  background: radial-gradient(ellipse at center, rgba(0, 0, 0, 0.72), rgba(0, 0, 0, 0) 75%);
+}
+
+.hotspot-label.is-below {
+  bottom: auto;
+  top: calc(100% + 18px);
+}
+
+.hotspot-label strong {
+  font-family: var(--f-display);
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  color: var(--c-amber-strong);
+  text-shadow: 0 2px 10px #000;
+}
+
+.hotspot-label em {
+  font-family: var(--f-display);
+  font-style: italic;
+  font-size: 22px;
+  color: var(--c-bone);
+  text-shadow: 0 2px 8px #000;
+}
+
+@media (hover: hover) {
+  .hotspot:hover .hotspot-label {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+.hotspot:focus-visible .hotspot-label {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* Tall objects: keep the label inside the stage. */
+.hotspot--bookshelf .hotspot-label,
+.hotspot--door .hotspot-label,
+.hotspot--clock .hotspot-label {
+  bottom: auto;
+  top: 40%;
+}
+
+/* Debug: visualise interaction zones */
+.show-zones .hotspot {
+  outline: 3px dashed rgba(255, 80, 80, 0.85);
+  background: rgba(255, 60, 60, 0.12);
+}
+
+.show-zones .hotspot-label {
+  opacity: 1;
+  transform: translate(-50%, 0);
+}
+
+/* ---------------------------------------------------------------- */
+/* Narrow screens: look around                                       */
+/* ---------------------------------------------------------------- */
+
+.pan-arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 3;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 72px;
+  margin-top: -36px;
+  color: var(--c-amber);
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0.55), transparent);
+  opacity: 0.75;
+  animation: panNudge 3s ease-in-out infinite;
+}
+
+.pan-arrow--left {
+  left: 0;
+  border-radius: 0 12px 12px 0;
+}
+
+.pan-arrow--right {
+  right: 0;
+  border-radius: 12px 0 0 12px;
+  background: linear-gradient(270deg, rgba(0, 0, 0, 0.55), transparent);
+  animation-delay: 1.5s;
+}
+
+@keyframes panNudge {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 0.95; }
+}
+
+.phase-intro .pan-arrow,
+.room.is-focused .pan-arrow {
+  display: none;
+}
